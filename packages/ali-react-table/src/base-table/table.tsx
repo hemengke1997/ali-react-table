@@ -568,11 +568,15 @@ export class BaseTable extends React.Component<BaseTableProps, BaseTableState> {
           })),
           op.distinctUntilChanged((x, y) => {
             // 因为 overscan 的存在，滚动较小的距离时不需要触发组件重渲染
-            return (
-              Math.abs(x.maxRenderWidth - y.maxRenderWidth) < this.props.overscan / 2 &&
-              Math.abs(x.maxRenderHeight - y.maxRenderHeight) < this.props.overscan / 2 &&
-              Math.abs(x.offsetY - y.offsetY) < this.props.overscan / 2
-            )
+
+            // hemengke: 每次都重渲染吧
+
+            // return (
+            //   Math.abs(x.maxRenderWidth - y.maxRenderWidth) < this.props.overscan / 2 &&
+            //   Math.abs(x.maxRenderHeight - y.maxRenderHeight) < this.props.overscan / 2 &&
+            //   Math.abs(x.offsetY - y.offsetY) < this.props.overscan / 2
+            // )
+            return false
           }),
         )
         .subscribe((sizeAndOffset) => {
