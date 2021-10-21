@@ -13,15 +13,7 @@ import { HtmlTable } from './html-table'
 import { RenderInfo, ResolvedUseVirtual, VerticalRenderRange, VirtualEnum } from './interfaces'
 import Loading, { LoadingContentWrapperProps } from './loading'
 import { BaseTableCSSVariables, Classes, LOCK_SHADOW_PADDING, StyledArtTableWrapper } from './styles'
-import {
-  getScrollbarSize,
-  OVERSCAN_SIZE,
-  shallowEqual,
-  STYLED_REF_PROP,
-  sum,
-  syncScrollLeft,
-  throttledWindowResize$,
-} from './utils'
+import { getScrollbarSize, shallowEqual, STYLED_REF_PROP, sum, syncScrollLeft, throttledWindowResize$ } from './utils'
 
 let emptyContentDeprecatedWarned = false
 function warnEmptyContentIsDeprecated() {
@@ -52,6 +44,9 @@ export interface BaseTableProps {
   footerDataSource?: any[]
   /** 表格的列配置 */
   columns: ArtColumn[]
+
+  /** overscan */
+  overscan?: number
 
   /** 是否开启虚拟滚动 */
   useVirtual?: VirtualEnum | { horizontal?: VirtualEnum; vertical?: VirtualEnum; header?: VirtualEnum }
@@ -159,7 +154,11 @@ export class BaseTable extends React.Component<BaseTableProps, BaseTableState> {
     dataSource: [] as any[],
   }
 
-  private rowHeightManager = makeRowHeightManager(this.props.dataSource.length, this.props.estimatedRowHeight)
+  private rowHeightManager = makeRowHeightManager(
+    this.props.dataSource.length,
+    this.props.estimatedRowHeight,
+    this.props.overscan,
+  )
 
   private artTableWrapperRef = React.createRef<HTMLDivElement>()
   private domHelper: TableDOMHelper
@@ -240,7 +239,7 @@ export class BaseTable extends React.Component<BaseTableProps, BaseTableState> {
 
   private updateOffsetX(nextOffsetX: number) {
     if (this.lastInfo.useVirtual.horizontal) {
-      if (Math.abs(nextOffsetX - this.state.offsetX) >= OVERSCAN_SIZE / 2) {
+      if (Math.abs(nextOffsetX - this.state.offsetX) >= this.props.overscan / 2) {
         this.setState({ offsetX: nextOffsetX })
       }
     }
@@ -570,9 +569,9 @@ export class BaseTable extends React.Component<BaseTableProps, BaseTableState> {
           op.distinctUntilChanged((x, y) => {
             // 因为 overscan 的存在，滚动较小的距离时不需要触发组件重渲染
             return (
-              Math.abs(x.maxRenderWidth - y.maxRenderWidth) < OVERSCAN_SIZE / 2 &&
-              Math.abs(x.maxRenderHeight - y.maxRenderHeight) < OVERSCAN_SIZE / 2 &&
-              Math.abs(x.offsetY - y.offsetY) < OVERSCAN_SIZE / 2
+              Math.abs(x.maxRenderWidth - y.maxRenderWidth) < this.props.overscan / 2 &&
+              Math.abs(x.maxRenderHeight - y.maxRenderHeight) < this.props.overscan / 2 &&
+              Math.abs(x.offsetY - y.offsetY) < this.props.overscan / 2
             )
           }),
         )

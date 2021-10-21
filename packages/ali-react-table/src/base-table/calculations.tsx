@@ -8,7 +8,7 @@ import {
   VisibleColumnDescriptor,
 } from './interfaces'
 import { BaseTable } from './table'
-import { AUTO_VIRTUAL_THRESHOLD, OVERSCAN_SIZE, sum } from './utils'
+import { AUTO_VIRTUAL_THRESHOLD, sum } from './utils'
 
 function resolveVirtualEnabled(virtualEnum: VirtualEnum, defaultValue: boolean) {
   if (virtualEnum == null || virtualEnum === 'auto') {
@@ -99,11 +99,13 @@ function getHorizontalRenderRange({
   maxRenderWidth,
   flat,
   useVirtual,
+  overscan = 100
 }: {
   offsetX: number
   maxRenderWidth: number
   flat: RenderInfo['flat']
   useVirtual: ResolvedUseVirtual
+  overscan: number
 }): HorizontalRenderRange {
   if (!useVirtual.horizontal) {
     return { leftIndex: 0, leftBlank: 0, rightIndex: flat.full.length, rightBlank: 0 }
@@ -114,7 +116,7 @@ function getHorizontalRenderRange({
   let leftBlank = 0
   let centerRenderWidth = 0
 
-  const overscannedOffsetX = Math.max(0, offsetX - OVERSCAN_SIZE)
+  const overscannedOffsetX = Math.max(0, offsetX - overscan)
   while (leftIndex < flat.center.length) {
     const col = flat.center[leftIndex]
     if (col.width + leftBlank < overscannedOffsetX) {
@@ -126,7 +128,7 @@ function getHorizontalRenderRange({
   }
 
   // 考虑 over scan 之后，中间部分的列至少需要渲染的宽度
-  const minCenterRenderWidth = maxRenderWidth + (overscannedOffsetX - leftBlank) + 2 * OVERSCAN_SIZE
+  const minCenterRenderWidth = maxRenderWidth + (overscannedOffsetX - leftBlank) + 2 * overscan
 
   while (leftIndex + centerCount < flat.center.length) {
     const col = flat.center[leftIndex + centerCount]
@@ -158,6 +160,7 @@ export function calculateRenderInfo(table: BaseTable): RenderInfo {
     columns: columnsProp,
     dataSource: dataSourceProp,
     defaultColumnWidth,
+    overscan
   } = table.props
 
   const columns = processColumns(columnsProp, defaultColumnWidth)
@@ -209,7 +212,7 @@ export function calculateRenderInfo(table: BaseTable): RenderInfo {
     }
   }
 
-  const horizontalRenderRange = getHorizontalRenderRange({ maxRenderWidth, offsetX, useVirtual, flat })
+  const horizontalRenderRange = getHorizontalRenderRange({ maxRenderWidth, offsetX, useVirtual, flat, overscan })
   const verticalRenderRange = table.getVerticalRenderRange(useVirtual)
 
   const { leftBlank, leftIndex, rightBlank, rightIndex } = horizontalRenderRange

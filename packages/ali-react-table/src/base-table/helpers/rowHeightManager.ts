@@ -1,5 +1,5 @@
 import { VerticalRenderRange } from '../interfaces'
-import { OVERSCAN_SIZE, sum } from '../utils'
+import { sum } from '../utils'
 
 export function getFullRenderRange(rowCount: number): VerticalRenderRange {
   return {
@@ -10,7 +10,7 @@ export function getFullRenderRange(rowCount: number): VerticalRenderRange {
   }
 }
 
-export function makeRowHeightManager(initRowCount: number, estimatedRowHeight: number) {
+export function makeRowHeightManager(initRowCount: number, estimatedRowHeight: number, overscan: number) {
   const cache = new Array<number>(initRowCount).fill(estimatedRowHeight)
 
   function getRenderRange(offset: number, maxRenderHeight: number, rowCount: number) {
@@ -73,7 +73,7 @@ export function makeRowHeightManager(initRowCount: number, estimatedRowHeight: n
     function overscanUpwards(topIndex: number, topBlank: number) {
       let overscanSize = 0
       let overscanCount = 0
-      while (overscanCount < topIndex && overscanSize < OVERSCAN_SIZE) {
+      while (overscanCount < topIndex && overscanSize < overscan) {
         overscanCount += 1
         overscanSize += cache[topIndex - overscanCount]
       }
@@ -98,7 +98,7 @@ export function makeRowHeightManager(initRowCount: number, estimatedRowHeight: n
     function overscanDownwards(bottomIndex: number, bottomBlank: number) {
       let overscanSize = 0
       let overscanCount = 0
-      while (overscanCount < rowCount - bottomIndex && overscanSize < OVERSCAN_SIZE) {
+      while (overscanCount < rowCount - bottomIndex && overscanSize < overscan) {
         overscanSize += cache[bottomIndex + overscanCount]
         overscanCount += 1
       }

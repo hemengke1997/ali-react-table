@@ -8,8 +8,6 @@ export const STYLED_VERSION = (styledComponents as any).createGlobalStyle != nul
 
 export const STYLED_REF_PROP = STYLED_VERSION === 'v3' ? 'innerRef' : 'ref'
 
-export const OVERSCAN_SIZE = 100
-
 export const AUTO_VIRTUAL_THRESHOLD = 100
 
 export function sum(arr: number[]) {
