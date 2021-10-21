@@ -1,6 +1,7 @@
 {
   "name": "hemengke-ali-react-table",
   "version": "0.0.0",
+  "private": false,
   "description": "高性能 React 表格组件",
   "sideEffects": false,
   "module": "dist/ali-react-table.esm.js",
