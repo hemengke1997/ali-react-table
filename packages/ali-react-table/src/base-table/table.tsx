@@ -575,7 +575,7 @@ export class BaseTable extends React.Component<BaseTableProps, BaseTableState> {
             //   Math.abs(x.maxRenderHeight - y.maxRenderHeight) < this.props.overscan / 2 &&
             //   Math.abs(x.offsetY - y.offsetY) < this.props.overscan / 2
             // )
-            const UNIT = 4
+            const UNIT = 2
             return (
               Math.abs(x.maxRenderWidth - y.maxRenderWidth) < this.props.overscan / UNIT &&
               Math.abs(x.maxRenderHeight - y.maxRenderHeight) < this.props.overscan / UNIT &&
