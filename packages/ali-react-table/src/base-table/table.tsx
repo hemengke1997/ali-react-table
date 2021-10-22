@@ -240,6 +240,8 @@ export class BaseTable extends React.Component<BaseTableProps, BaseTableState> {
   private updateOffsetX(nextOffsetX: number) {
     if (this.lastInfo.useVirtual.horizontal) {
       if (Math.abs(nextOffsetX - this.state.offsetX) >= this.props.overscan / 2) {
+        console.log('nextOffsetX', nextOffsetX)
+        console.log('this.state.offsetX', this.state.offsetX)
         this.setState({ offsetX: nextOffsetX })
       }
     }
@@ -568,15 +570,17 @@ export class BaseTable extends React.Component<BaseTableProps, BaseTableState> {
           })),
           op.distinctUntilChanged((x, y) => {
             // 因为 overscan 的存在，滚动较小的距离时不需要触发组件重渲染
-
-            // hemengke: 每次都重渲染吧
-
             // return (
             //   Math.abs(x.maxRenderWidth - y.maxRenderWidth) < this.props.overscan / 2 &&
             //   Math.abs(x.maxRenderHeight - y.maxRenderHeight) < this.props.overscan / 2 &&
             //   Math.abs(x.offsetY - y.offsetY) < this.props.overscan / 2
             // )
-            return false
+            const UNIT = 4
+            return (
+              Math.abs(x.maxRenderWidth - y.maxRenderWidth) < this.props.overscan / UNIT &&
+              Math.abs(x.maxRenderHeight - y.maxRenderHeight) < this.props.overscan / UNIT &&
+              Math.abs(x.offsetY - y.offsetY) < this.props.overscan / UNIT
+            )
           }),
         )
         .subscribe((sizeAndOffset) => {
