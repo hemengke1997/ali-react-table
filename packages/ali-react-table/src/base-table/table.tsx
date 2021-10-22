@@ -44,9 +44,10 @@ export interface BaseTableProps {
   footerDataSource?: any[]
   /** 表格的列配置 */
   columns: ArtColumn[]
-
-  /** overscan */
+  /** 表格overscan */
   overscan?: number
+  /** overScan单位，越小刷新频率越低 */
+  overscanUnit?: number
 
   /** 是否开启虚拟滚动 */
   useVirtual?: VirtualEnum | { horizontal?: VirtualEnum; vertical?: VirtualEnum; header?: VirtualEnum }
@@ -240,8 +241,6 @@ export class BaseTable extends React.Component<BaseTableProps, BaseTableState> {
   private updateOffsetX(nextOffsetX: number) {
     if (this.lastInfo.useVirtual.horizontal) {
       if (Math.abs(nextOffsetX - this.state.offsetX) >= this.props.overscan / 2) {
-        console.log('nextOffsetX', nextOffsetX)
-        console.log('this.state.offsetX', this.state.offsetX)
         this.setState({ offsetX: nextOffsetX })
       }
     }
@@ -575,11 +574,11 @@ export class BaseTable extends React.Component<BaseTableProps, BaseTableState> {
             //   Math.abs(x.maxRenderHeight - y.maxRenderHeight) < this.props.overscan / 2 &&
             //   Math.abs(x.offsetY - y.offsetY) < this.props.overscan / 2
             // )
-            const UNIT = 2
+            const overscanUnit = this.props.overscanUnit || 2
             return (
-              Math.abs(x.maxRenderWidth - y.maxRenderWidth) < this.props.overscan / UNIT &&
-              Math.abs(x.maxRenderHeight - y.maxRenderHeight) < this.props.overscan / UNIT &&
-              Math.abs(x.offsetY - y.offsetY) < this.props.overscan / UNIT
+              Math.abs(x.maxRenderWidth - y.maxRenderWidth) < this.props.overscan / this.props.overscanUnit &&
+              Math.abs(x.maxRenderHeight - y.maxRenderHeight) < this.props.overscan / overscanUnit &&
+              Math.abs(x.offsetY - y.offsetY) < this.props.overscan / overscanUnit
             )
           }),
         )
