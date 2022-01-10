@@ -235,7 +235,7 @@ export function 动态表格行高度() {
           展开/收拢全部
         </button>
       </p>
-      <WebsiteBaseTable {...pipeline.getProps()} />
+      <WebsiteBaseTable {...pipeline.getProps()} overscan={2000} />
     </div>
   )
 }
